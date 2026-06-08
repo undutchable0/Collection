@@ -1,0 +1,34 @@
+---
+
+#Collects interface status, then uses j2 template to parse output. J2 template based off fact_xx.json files
+#passwords.yml file encrypted, use the command 'ansible-playbook get_interfaces.yml --ask-vault-pass' to input pw. PW in Keeper
+
+- name: "PLAY 1: Collect information from all routers"
+  hosts: TESTSWTS
+  vars_files:
+    - vars/passwords.yml
+  vars:
+      ansible_password: "{{ host_passwords[inventory_hostname] }}"
+
+  tasks:
+
+    - name: "TASK 1: Collect system facts"
+      ios_facts:
+        gather_subset:
+          - "interfaces"
+      register: "facts"
+  
+
+    - name: "Task 2: Parse with j2 template to output file"
+      template:
+        src: "templates/facts.j2"
+        dest: "tmp/jinja/INTERFACES_{{ inventory_hostname }}.json"
+
+    - name: "Result"
+      debug:
+        msg: "Results in /tmp/jinja/INTERFACES_{{ inventory_hostname }}.json"
+
+      # - name: "TASK X: Save collected facts to a file"
+      #   copy:
+      #     content: "{{ facts | to_nice_json }}"
+      #     dest: "tmp/facts_{{ inventory_hostname }}.json"

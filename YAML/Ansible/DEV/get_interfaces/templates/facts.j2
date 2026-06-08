@@ -1,0 +1,5 @@
+## INTERFACE SUMMARY for {{ inventory_hostname }} ##
+
+{% for name, data in facts["ansible_facts"]["ansible_net_interfaces"].items() %}
+{{ loop.index }}. {{ name }}: {{ data["operstatus"] }}/{{ data["lineprotocol"] }} {{ "\n  " }} description: {{ data["description"] }}
+{% endfor %}

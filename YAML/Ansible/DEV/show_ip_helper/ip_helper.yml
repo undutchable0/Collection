@@ -1,0 +1,42 @@
+---
+
+#Runs command "show ip helper-address" on targeted switches and prints output to file.
+#passwords.yml file encrypted, use the command 'ansible-playbook ip_helper.yml --ask-vault-pass' to input pw. PW in Keeper
+
+- name: "PLAY 1: Collect information from all routers"
+  hosts: all
+  vars_files:
+    - vars/passwords.yml
+  vars:
+      ansible_password: "{{ host_passwords[inventory_hostname] | default( group_passwords[group_names[0]] ) }}"
+      output_file: "./show_ip_helper_all.txt"
+
+  tasks:
+
+    - name: "TASK 1: Show ip helper-address command"
+      ios_command:
+        commands:
+          - "show ip helper-address"
+      register: helper
+
+    - name: "TASK 2: Print output"
+      debug:
+        var: helper
+
+    - name: "Task 3: Store output in host fact"
+      set_fact:
+        helper_output: "{{ helper.stdout[0] }}"
+
+    - name: "Task 4: Write one combined file (single writer)"
+      run_once: true
+      delegate_to: localhost
+      copy:
+        dest: "{{ output_file }}"
+        mode: "0644"
+        content: |
+          {% for h in ansible_play_hosts | sort %}
+          ===== {{ h }} =====
+          {{ hostvars[h].helper_output | default('NO OUTPUT') }}
+
+          {% endfor %}
+

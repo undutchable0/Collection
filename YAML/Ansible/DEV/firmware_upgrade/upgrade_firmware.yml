@@ -1,0 +1,93 @@
+---
+- name: 9300 Upgrade
+  hosts: switches
+  gather_facts: false
+  vars:
+    new_version: 17.18.01
+    new_file: "cat9k_lite_iosxe.{{ new_version }}.SPA.bin"
+
+  tasks:
+    - name: Gather facts
+      cisco.ios.ios_facts:
+        gather_subset: hardware
+      register: facts_output
+    - name: print output
+      debug:
+        msg: "Current version is {{ facts_output['ansible_facts']['ansible_net_version'] }}"
+
+    - name: Save the Config
+      cisco.ios.ios_command:
+        commands:
+          - command: 'copy running-config startup-config'
+            prompt: 'Destination filename \[startup-config\]\?'
+            answer: "\r"
+      register: save_config
+
+    - name: Print Save
+      debug:
+        msg: "{{ save_config }}"
+
+    - name: Start Upgrade Process
+      block:
+      - name: Check for old files and remove if found
+        cisco.ios.ios_command:
+          commands:
+            - command: 'install remove inactive'
+              prompt:
+                - 'Do you want to remove the above files\? \[y/n\]'
+              answer:
+                - 'y'
+
+        register: install_remove_output
+        vars:
+          ansible_command_timeout: 600
+
+      - name: Display install_remove output and result
+        debug:
+          msg: "{{ 'No old files found. Nothing to clean.' if 'SUCCESS: No extra package or provisioning files found on media' in install_remove_output.stdout[0] else 'Old files removed successfully.' }}"
+
+    - name: Copy IOS image via FTP
+      cisco.ios.ios_command:
+        commands:
+          - command: "copy tftp://**/{{ new_file }} flash:"
+            prompt:
+              - 'Destination filename [{{ new_file }}]?'
+            answer:
+              - "\r"
+      vars:
+        ansible_command_timeout: 900
+
+    - name: Install and activate new IOS image
+      cisco.ios.ios_command:
+        commands:
+          - command: 'install add file flash:{{ new_file }} activate commit'
+            prompt: 
+              - 'This operation may require a reload of the system. Do you want to proceed\? \[y/n\]'
+            answer: 
+              - 'y'
+      register: install_activate_output
+      vars:
+        ansible_command_timeout: 1200
+
+    - debug:
+        var: install_activate_output.stdout_lines
+
+    - name: Wait for switch to reboot and become reachable
+      wait_for_connection:
+        delay: 180
+        sleep: 60
+        timeout: 900
+
+    - name: Gather new facts
+      cisco.ios.ios_facts:
+        gather_subset: hardware
+      register: facts_output_new
+
+    - name: New Version
+      debug:
+        msg: "New Version is {{ facts_output_new['ansible_facts']['ansible_net_version'] }}, Upgrade Successfully Completed"
+    #   when: new_version == facts_output_new['ansible_facts']['ansible_net_version']
+
+    # when: new_version != facts_output['ansible_facts']['ansible_net_version']
+
+    
