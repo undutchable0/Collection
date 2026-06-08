@@ -1,0 +1,84 @@
+---
+
+
+- name: "PLAY 1: Collect information from all routers"
+  hosts: TESTSWT01
+  gather_facts: false
+  vars_files:
+    - vars/passwords.yml
+  vars:
+      ansible_password: "{{ host_passwords[inventory_hostname] | default( group_passwords[group_names[0]] ) }}"
+
+  tasks:
+
+    - name: "TASK 1: Gather interface facts"
+      cisco.ios.ios_facts:
+        gather_subset:
+          - config
+      register: facts_output
+
+    - name: "Split config into lines"
+      set_fact:
+        config_lines: "{{ facts_output.ansible_facts.ansible_net_config.splitlines() }}"
+
+    # - name: "Display config lines"
+    #   debug:
+    #     var: config_lines
+
+    - name: Initialize parser state
+      set_fact:
+        helper_interfaces: []
+        current_intf: ""
+
+    - name: Parse config to find interfaces that have ip helper-address
+      vars:
+        next_intf: "{{ item.split()[1] if item.startswith('interface ') else current_intf }}"
+        has_helper: "{{ (item | trim) is match('^ip helper-address\\s+') }}"
+      set_fact:
+        current_intf: "{{ next_intf }}"
+        helper_interfaces: >-
+          {{
+            helper_interfaces
+            + ([next_intf] if (has_helper and (next_intf|length > 0) and (next_intf not in helper_interfaces)) else [])
+          }}
+      loop: "{{ config_lines }}"
+
+    - name: Show interfaces with ip helper-address
+      debug:
+        var: helper_interfaces
+    
+    - name: "Remove ip helper 192.168.2.4"
+      cisco.ios.ios_config:
+        lines:
+          - "no ip helper-address 192.168.2.4"
+        parents: "interface {{ item }}"
+      loop: "{{ helper_interfaces }}"
+      when: helper_interfaces | length > 0
+
+    # - name: "Task 3: Store output in host fact"
+    #   set_fact:
+    #     helper_output: "{{ helper.stdout[0] }}"
+
+    # - name: "Task 4: Write one combined file (single writer)"
+    #   run_once: true
+    #   delegate_to: localhost
+    #   copy:
+    #     dest: "{{ output_file }}"
+    #     mode: "0644"
+    #     content: |
+    #       {% for h in ansible_play_hosts | sort %}
+    #       ===== {{ h }} =====
+    #       {{ hostvars[h].helper_output | default('NO OUTPUT') }}
+
+    #       {% endfor %}
+
+  
+
+    # - name: "Task 2: Parse with j2 template to output file"
+    #   template:
+    #     src: "templates/facts.j2"
+    #     dest: "tmp/jinja/INTERFACES_{{ inventory_hostname }}.json"
+
+    # - name: "Result"
+    #   debug:
+    #     msg: "Results in /tmp/jinja/INTERFACES_{{ inventory_hostname }}.json"

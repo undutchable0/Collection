@@ -1,0 +1,121 @@
+===== AUTHSWT01 =====
+
+
+===== AUTHSWT02 =====
+
+
+===== CCPDSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan68                     192.168.33.20   0   None                 Unknown
+
+===== CMAFSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan65                     192.168.33.20   0   None                 Unknown
+
+===== CMAFSWT02 =====
+Interface    Helper Address          Udp port         
+--------------- --------------- ------------------------
+
+===== CMAFSWT03 =====
+Interface    Helper Address          Udp port         
+--------------- --------------- ------------------------
+
+===== CSPDSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan61                     192.168.33.20   0   None                 Unknown  
+Vlan161                    192.168.33.20   0   None                 Unknown
+
+===== CSPDSWTEVEN =====
+
+
+===== CSPDSWTLGHTBR =====
+
+
+===== CSPDSWTODDS =====
+
+
+===== CSPDSWTTRN =====
+Interface    Helper Address          Udp port         
+--------------- --------------- ------------------------
+
+===== DC01SWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan11                     192.168.33.20   0   None                 Unknown  
+Vlan41                     192.168.33.20   0   None                 Unknown  
+Vlan42                     192.168.33.20   0   None                 Unknown  
+Vlan45                     192.168.33.20   0   None                 Unknown  
+Vlan55                     192.168.33.20   0   None                 Unknown  
+Vlan100                    192.168.33.20   0   None                 Unknown  
+Vlan121                    192.168.33.20   0   None                 Unknown
+
+===== DC01SWT02 =====
+
+
+===== DC01SWT03 =====
+
+
+===== DC01SWT04 =====
+
+
+===== DC02SWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan121                    192.168.33.20   0   None                 Unknown  
+Vlan200                    192.168.33.20   0   None                 Unknown
+
+===== DC02SWT03 =====
+
+
+===== DC02SWT04 =====
+
+
+===== EPSOSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan62                     192.168.33.20   0   None                 Unknown  
+Vlan162                    192.168.33.20   0   None                 Unknown
+
+===== EPSOSWTLGHTBR =====
+Interface       Helper Address  Udp port                 
+--------------- --------------- ------------------------
+
+===== EPSOSWTTRN =====
+Interface       Helper Address  Udp port                 
+--------------- --------------- ------------------------
+
+===== FCFDSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan63                     192.168.33.20   0   None                 Unknown
+
+===== PAFBSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan64                     192.168.33.20   0   None                 Unknown
+
+===== TCSOSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan67                     192.168.33.20   0   None                 Unknown
+
+===== TESTSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Loopback1                  2.2.2.2         0   None                 Unknown  
+                           192.168.33.20   0   None                 Unknown  
+Loopback2                  2.2.2.2         0   None                 Unknown  
+                           192.168.33.20   0   None                 Unknown  
+Loopback3                  2.2.2.2         1   None                 Unknown  
+Loopback4                  2.2.2.2         0   None                 Unknown  
+Loopback5                  2.2.2.2         0   None                 Unknown  
+Loopback6                  2.2.2.2         0   None                 Unknown
+
+===== TESTSWT02 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Loopback1                  2.2.2.2         0   None                 Unknown  
+                           192.168.33.20   0   None                 Unknown  
+Loopback2                  2.2.2.2         0   None                 Unknown  
+                           192.168.33.20   0   None                 Unknown  
+Loopback3                  2.2.2.2         1   None                 Unknown  
+Loopback4                  2.2.2.2         0   None                 Unknown  
+Loopback5                  2.2.2.2         0   None                 Unknown  
+Loopback6                  2.2.2.2         0   None                 Unknown
+
+===== WPPDSWT01 =====
+Interface                  Helper-Address  VPN VRG Name             VRG State
+Vlan66                     192.168.33.20   0   None                 Unknown
+

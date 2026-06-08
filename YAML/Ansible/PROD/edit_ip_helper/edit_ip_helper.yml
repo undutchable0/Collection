@@ -1,0 +1,62 @@
+---
+
+
+- name: "Remove target helper"
+  hosts: all
+  strategy: linear
+  gather_facts: false
+  vars_files:
+    - vars/passwords.yml
+  vars:
+      ansible_password: "{{ host_passwords[inventory_hostname] | default( group_passwords[group_names[0]] ) }}"
+      # target_helper: "**"
+      output_file: "./show_ip_helper_all.txt"
+
+  tasks:
+
+    - name: "Show ip helper-address command"
+      cisco.ios.ios_command:
+        commands:
+          - "show ip helper-address"
+      register: helper_output
+
+    - name: "Display helper output"
+      debug:
+        var: helper_output
+    
+    - name: "Remove target ip helper from all matching interfaces"
+      cisco.ios.ios_config:
+        parents: "interface {{ item }}"
+        lines:
+          - "ip helper-address **"
+        save_when: modified
+      loop: "{{ helper_interfaces }}"
+
+    - name: "Show ip helper-address command"
+      ios_command:
+        commands:
+          - "show ip helper-address"
+      register: helper_final
+
+    - name: "Print output"
+      debug:
+        var: helper_final
+
+    - name: "Store output in show_ip_helper_all.txt"
+      set_fact:
+        helper_output: "{{ helper_final.stdout[0] }}"
+
+    - name: "Write one combined file (single writer)"
+      run_once: true
+      delegate_to: localhost
+      copy:
+        dest: "{{ output_file }}"
+        mode: "0644"
+        content: |
+          {% for h in ansible_play_hosts | sort %}
+          ===== {{ h }} =====
+          {{ hostvars[h].helper_output | default('NO OUTPUT') }}
+
+          {% endfor %}
+
+
