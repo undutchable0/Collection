@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     switch = {
         "connection": {
-            "host": "192.168.62.2",
+            "host": "**",
             "username": "**",
             "password": **,
             "device_type": "cisco_ios",
